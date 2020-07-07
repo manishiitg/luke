@@ -104,7 +104,7 @@ def run(common_args, **task_args):
 
                 if dev_results["accuracy"] > best_dev_accuracy[0]:
                     best_weights[0] = {k: v.to("cpu").clone() for k, v in model.state_dict().items()}
-                    best_dev_accuracy[0] = dev_results["f1"]
+                    best_dev_accuracy[0] = dev_results["accuracy"]
                     results["best_epoch"] = epoch
 
                 model.train()
