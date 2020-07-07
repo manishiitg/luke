@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 from argparse import Namespace
 
 import click
@@ -129,7 +130,7 @@ def run(common_args, **task_args):
             eval_dataloader = DataLoader(eval_data, batch_size=32, collate_fn=collate_fn)
             predictions_file = None
             if args.output_dir:
-                predictions_file = os.path.join(args.output_dir, "eval_predictions_%s.jsonl" % test_file_path)
+                predictions_file = os.path.join(args.output_dir, f"eval_predictions_{Path(test_file_path).name}.jsonl")
             results[test_file_path] = evaluate(args, eval_dataloader, model, predictions_file)
 
         if args.output_dir:
