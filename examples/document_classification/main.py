@@ -77,6 +77,7 @@ def run(common_args, **task_args):
 
         return ret
 
+    results = {}
     if args.do_train:
 
         train_dataloader = DataLoader(
@@ -117,8 +118,6 @@ def run(common_args, **task_args):
             logger.info("Saving model to %s", args.output_dir)
             torch.save(model.state_dict(), os.path.join(args.output_dir, WEIGHTS_NAME))
             torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
-
-    results = {}
 
     if args.do_eval:
         model.eval()
