@@ -30,8 +30,8 @@ def cli():
 @click.option("-t", "--test-set", multiple=True)
 @click.option("--do-train/--no-train", default=False)
 @click.option("--do-eval/--no-eval", default=True)
-@click.option("--num-train-epochs", default=2)
-@click.option("--train-batch-size", default=1)
+@click.option("--num-train-epochs", default=5)
+@click.option("--train-batch-size", default=16)
 @click.option("--max-seq-length", default=512)
 @click.option("--masked-entity-prob", default=0.7)
 @click.option(
@@ -127,7 +127,9 @@ def run(common_args, **task_args):
             logger.info("***** Evaluating: %s *****", test_file_path)
             eval_data = parse_mldoc(test_file_path)
             eval_data = convert_documents_to_features(eval_data, args.tokenizer, args.max_seq_length,)
-            eval_dataloader = DataLoader(eval_data, batch_size=32, collate_fn=collate_fn)
+            eval_dataloader = DataLoader(
+                eval_data, batch_size=args.train_batch_size, collate_fn=collate_fn, shuffle=False
+            )
             predictions_file = None
             if args.output_dir:
                 predictions_file = os.path.join(args.output_dir, f"eval_predictions_{Path(test_file_path).name}.jsonl")
@@ -144,11 +146,11 @@ def run(common_args, **task_args):
 def evaluate(args, eval_dataloader: DataLoader, model: LukeForDocumentClassification, output_file: str = None):
     predictions = []
     labels = []
-    for batch in tqdm(eval_dataloader, leave=False):  # the batch size must be 1
+    for batch in tqdm(eval_dataloader, leave=False):
         inputs = {k: v.to(args.device) for k, v in batch.items() if k != "label"}
         with torch.no_grad():
             logits = model(**inputs)
-            result = torch.argmax(logits, dim=1).squeeze(0)
+            result = torch.argmax(logits, dim=1)
             predictions += result.tolist()
         labels += batch["label"].tolist()
 
