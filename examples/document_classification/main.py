@@ -52,7 +52,7 @@ def run(common_args, **task_args):
     dataset = {"train": train_data}
     if args.validation_data_file:
         dataset["validation"] = convert_documents_to_features(
-            parse_mldoc(args.train_data_file), args.tokenizer, args.max_seq_length
+            parse_mldoc(args.validation_data_file), args.tokenizer, args.max_seq_length
         )
 
     model_config = args.model_config
