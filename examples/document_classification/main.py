@@ -1,3 +1,4 @@
+from typing import Dict
 import json
 import logging
 import os
@@ -13,8 +14,7 @@ from transformers import WEIGHTS_NAME
 from ..utils import set_seed
 from ..utils.trainer import Trainer, trainer_args
 from .model import LukeForDocumentClassification
-from .utils import convert_documents_to_features, parse_mldoc
-
+from .utils import MldocReader, features2data_loader
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +48,21 @@ def run(common_args, **task_args):
 
     set_seed(args.seed)
 
-    train_data = convert_documents_to_features(parse_mldoc(args.train_data_file), args.tokenizer, args.max_seq_length)
-    dataset = {"train": train_data}
-    if args.validation_data_file:
-        dataset["validation"] = convert_documents_to_features(
-            parse_mldoc(args.validation_data_file), args.tokenizer, args.max_seq_length
-        )
+    reader = MldocReader(tokenizer=args.tokenizer, max_seq_length=args.max_seq_length)
+    pad_token_id = args.tokenizer.pad_token_id
 
+    train_dataloader = features2data_loader(
+        reader.read(args.train_data_file), pad_token_id=pad_token_id, batch_size=args.train_batch_size, shuffle=True
+    )
+
+    if args.validation_data_file:
+        validation_dataloader = features2data_loader(
+            reader.read(args.validation_data_file),
+            pad_token_id=pad_token_id,
+            batch_size=args.train_batch_size,
+            shuffle=False,
+        )
+    # Prepare the model
     model_config = args.model_config
     logger.info("Model configuration: %s", model_config)
 
@@ -62,27 +70,8 @@ def run(common_args, **task_args):
     model.load_state_dict(args.model_weights, strict=False)
     model.to(args.device)
 
-    def collate_fn(batch):
-        def create_padded_sequence(attr_name: str, padding_value: int):
-            tensors = [torch.tensor(getattr(o, attr_name), dtype=torch.long) for o in batch]
-            return torch.nn.utils.rnn.pad_sequence(tensors, batch_first=True, padding_value=padding_value)
-
-        ret = dict(
-            word_ids=create_padded_sequence("word_ids", args.tokenizer.pad_token_id),
-            word_segment_ids=create_padded_sequence("word_segment_ids", 0),
-            word_attention_mask=create_padded_sequence("word_attention_mask", 0),
-        )
-
-        ret["label"] = torch.LongTensor([o.label for o in batch])
-
-        return ret
-
     results = {}
     if args.do_train:
-
-        train_dataloader = DataLoader(
-            dataset["train"], batch_size=args.train_batch_size, collate_fn=collate_fn, shuffle=True
-        )
 
         num_train_steps_per_epoch = len(train_dataloader) // args.gradient_accumulation_steps
         num_train_steps = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
@@ -93,10 +82,7 @@ def run(common_args, **task_args):
         def step_callback(model: LukeForDocumentClassification, global_step: int):
             if global_step % num_train_steps_per_epoch == 0 and args.local_rank in (0, -1):
                 epoch = int(global_step / num_train_steps_per_epoch - 1)
-                validation_dataloader = DataLoader(
-                    dataset["validation"], batch_size=args.train_batch_size, collate_fn=collate_fn, shuffle=False
-                )
-
+                model.eval()
                 dev_results = evaluate(args, validation_dataloader, model)
                 args.experiment.log_metrics({f"dev_{k}_epoch{epoch}": v for k, v in dev_results.items()}, epoch=epoch)
                 results.update({f"dev_{k}_epoch{epoch}": v for k, v in dev_results.items()})
@@ -124,10 +110,8 @@ def run(common_args, **task_args):
 
         for test_file_path in args.test_set:
             logger.info("***** Evaluating: %s *****", test_file_path)
-            eval_data = parse_mldoc(test_file_path)
-            eval_data = convert_documents_to_features(eval_data, args.tokenizer, args.max_seq_length,)
-            eval_dataloader = DataLoader(
-                eval_data, batch_size=args.train_batch_size, collate_fn=collate_fn, shuffle=False
+            eval_dataloader = features2data_loader(
+                reader.read(test_file_path), pad_token_id=pad_token_id, batch_size=args.train_batch_size, shuffle=False,
             )
             predictions_file = None
             if args.output_dir:
@@ -142,7 +126,9 @@ def run(common_args, **task_args):
     return results
 
 
-def evaluate(args, eval_dataloader: DataLoader, model: LukeForDocumentClassification, output_file: str = None):
+def evaluate(
+    args, eval_dataloader: DataLoader, model: LukeForDocumentClassification, output_file: str = None
+) -> Dict[str, float]:
     predictions = []
     labels = []
     for batch in tqdm(eval_dataloader, leave=False):

@@ -4,14 +4,14 @@ from torch import nn
 
 from luke.model import LukeModel
 
-MLDOC_NUM_LABEL = 4
+MLDOC_NUM_LABELS = 4
 
 
 class LukeForDocumentClassification(LukeModel):
     def __init__(self, config):
         super(LukeForDocumentClassification, self).__init__(config)
 
-        self.classifier = nn.Linear(config.hidden_size, MLDOC_NUM_LABEL)
+        self.classifier = nn.Linear(config.hidden_size, MLDOC_NUM_LABELS)
 
         self.apply(self.init_weights)
 
