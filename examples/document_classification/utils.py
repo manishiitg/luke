@@ -50,22 +50,22 @@ class MldocReader:
 
         return features
 
+    def get_dataset_loader(self, filepath: str, batch_size: int, shuffle: bool = False) -> DataLoader:
+        features = self.read(filepath)
 
-def features2data_loader(
-    features: Dict[str, np.ndarray], pad_token_id: int, batch_size: int, shuffle: bool = False
-) -> DataLoader:
-    def collate_fn(batch: List[Dict[str, np.ndarray]]):
-        def create_padded_sequence(attr_name: str, padding_value: int):
-            tensors = [torch.tensor(o[attr_name], dtype=torch.long) for o in batch]
-            return torch.nn.utils.rnn.pad_sequence(tensors, batch_first=True, padding_value=padding_value)
+        def collate_fn(batch: List[Dict[str, np.ndarray]]):
+            def create_padded_sequence(attr_name: str, padding_value: int):
+                tensors = [torch.tensor(o[attr_name], dtype=torch.long) for o in batch]
+                return torch.nn.utils.rnn.pad_sequence(tensors, batch_first=True, padding_value=padding_value)
 
-        ret = dict(
-            word_ids=create_padded_sequence("word_ids", pad_token_id),
-            word_segment_ids=create_padded_sequence("word_segment_ids", 0),
-            word_attention_mask=create_padded_sequence("word_attention_mask", 0),
-        )
+            pad_token_id = self.tokenizer.pad_token_id
+            ret = dict(
+                word_ids=create_padded_sequence("word_ids", pad_token_id),
+                word_segment_ids=create_padded_sequence("word_segment_ids", 0),
+                word_attention_mask=create_padded_sequence("word_attention_mask", 0),
+            )
 
-        ret["label"] = torch.LongTensor([o["label"] for o in batch])
-        return ret
+            ret["label"] = torch.LongTensor([o["label"] for o in batch])
+            return ret
 
-    return DataLoader(features, batch_size=batch_size, collate_fn=collate_fn, shuffle=shuffle)
+        return DataLoader(features, batch_size=batch_size, collate_fn=collate_fn, shuffle=shuffle)

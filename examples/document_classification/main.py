@@ -14,7 +14,7 @@ from transformers import WEIGHTS_NAME
 from ..utils import set_seed
 from ..utils.trainer import Trainer, trainer_args
 from .model import LukeForDocumentClassification
-from .utils import MldocReader, features2data_loader
+from .utils import MldocReader
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +33,6 @@ def cli():
 @click.option("--num-train-epochs", default=5)
 @click.option("--train-batch-size", default=16)
 @click.option("--max-seq-length", default=512)
-@click.option("--masked-entity-prob", default=0.7)
-@click.option(
-    "--context-entity-selection-order", default="highest_prob", type=click.Choice(["natural", "random", "highest_prob"])
-)
-@click.option("--document-split-mode", default="simple", type=click.Choice(["simple", "per_mention"]))
-@click.option("--fix-entity-emb/--update-entity-emb", default=True)
 @click.option("--seed", default=1)
 @trainer_args
 @click.pass_obj
@@ -49,19 +43,14 @@ def run(common_args, **task_args):
     set_seed(args.seed)
 
     reader = MldocReader(tokenizer=args.tokenizer, max_seq_length=args.max_seq_length)
-    pad_token_id = args.tokenizer.pad_token_id
 
-    train_dataloader = features2data_loader(
-        reader.read(args.train_data_file), pad_token_id=pad_token_id, batch_size=args.train_batch_size, shuffle=True
-    )
+    train_dataloader = reader.get_dataset_loader(args.train_data_file, batch_size=args.train_batch_size, shuffle=True)
 
     if args.validation_data_file:
-        validation_dataloader = features2data_loader(
-            reader.read(args.validation_data_file),
-            pad_token_id=pad_token_id,
-            batch_size=args.train_batch_size,
-            shuffle=False,
+        validation_dataloader = reader.get_dataset_loader(
+            args.validation_data_file, batch_size=args.train_batch_size, shuffle=False
         )
+
     # Prepare the model
     model_config = args.model_config
     logger.info("Model configuration: %s", model_config)
@@ -110,9 +99,7 @@ def run(common_args, **task_args):
 
         for test_file_path in args.test_set:
             logger.info("***** Evaluating: %s *****", test_file_path)
-            eval_dataloader = features2data_loader(
-                reader.read(test_file_path), pad_token_id=pad_token_id, batch_size=args.train_batch_size, shuffle=False,
-            )
+            eval_dataloader = reader.get_dataset_loader(test_file_path, batch_size=args.train_batch_size, shuffle=False)
             predictions_file = None
             if args.output_dir:
                 predictions_file = os.path.join(args.output_dir, f"eval_predictions_{Path(test_file_path).name}.jsonl")
