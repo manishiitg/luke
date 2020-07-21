@@ -8,7 +8,8 @@ from typing import Dict
 import click
 import torch
 
-from luke.model import LukeConfig
+from transformers import AutoModel, PretrainedConfig
+from luke.model import LukeConfig, LukeModel
 from .entity_vocab import EntityVocab
 from .word_tokenizer import AutoTokenizer
 
@@ -16,6 +17,13 @@ MODEL_FILE = "pytorch_model.bin"
 METADATA_FILE = "metadata.json"
 TSV_ENTITY_VOCAB_FILE = "entity_vocab.tsv"
 ENTITY_VOCAB_FILE = "entity_vocab.json"
+
+
+def load_from_config(config: PretrainedConfig):
+    if isinstance(config, LukeConfig):
+        return LukeModel(config)
+    else:
+        return AutoModel.from_config(config)
 
 
 def get_entity_vocab_file_path(directory: str) -> str:

@@ -5,15 +5,14 @@ import string
 import subprocess
 import sys
 from argparse import Namespace
-
-logging.getLogger("transformers").setLevel(logging.WARNING)
-
 import click
 import torch
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from luke.utils.model_utils import ModelArchive
-
 from .utils.experiment_logger import commet_logger_args, CometLogger, NullLogger
+
+logging.getLogger("transformers").setLevel(logging.WARNING)
 
 LOG_FORMAT = "[%(asctime)s] [%(levelname)s] %(message)s (%(funcName)s@%(filename)s:%(lineno)s)"
 
@@ -38,6 +37,7 @@ logger = logging.getLogger(__name__)
 @click.option("--master-port", default=29500)
 @click.option("--local-rank", "--local_rank", default=-1)
 @click.option("--model-file", type=click.Path(exists=True))
+@click.option("--pretrained-model", type=str)
 @commet_logger_args
 @click.pass_context
 def cli(ctx, **kwargs):
@@ -67,6 +67,7 @@ def cli(ctx, **kwargs):
                 raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
 
         sys.exit(0)
+
     else:
         if args.local_rank not in (-1, 0):
             logging.basicConfig(format=LOG_FORMAT, level=logging.WARNING)
@@ -108,6 +109,14 @@ def cli(ctx, **kwargs):
 
             experiment_logger.log_parameter("model_file_name", os.path.basename(args.model_file))
 
+        if args.pretrained_model:
+            ctx.obj["tokenizer"] = AutoTokenizer.from_pretrained(args.pretrained_model)
+            ctx.obj["pretrained_model"] = args.pretrained_model
+            ctx.obj["model_config"] = AutoConfig.from_pretrained(args.pretrained_model)
+            ctx.obj["model_weights"] = AutoModel.from_pretrained(args.pretrained_model).state_dict()
+
+            experiment_logger.log_parameter("model_file_name", args.pretrained_model)
+
 
 from .entity_disambiguation.main import cli as entity_disambiguation_cli
 
@@ -130,6 +139,7 @@ cli.add_command(mention_db_cli)
 from .entity_span_qa.main import cli as entity_span_qa_cli
 
 cli.add_command(entity_span_qa_cli)
+
 from .document_classification.main import cli as document_classification_cli
 
 cli.add_command(document_classification_cli)

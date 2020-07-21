@@ -2,18 +2,16 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from luke.model import LukeModel
+from transformers import PreTrainedModel
 
 MLDOC_NUM_LABELS = 4
 
 
-class LukeForDocumentClassification(LukeModel):
-    def __init__(self, config):
-        super(LukeForDocumentClassification, self).__init__(config)
-
-        self.classifier = nn.Linear(config.hidden_size, MLDOC_NUM_LABELS)
-
-        self.apply(self.init_weights)
+class DocumentClassificationModel(nn.Module):
+    def __init__(self, encoder: PreTrainedModel):
+        super().__init__()
+        self.encoder = encoder
+        self.classifier = nn.Linear(self.encoder.config.hidden_size, MLDOC_NUM_LABELS)
 
     def forward(
         self,
@@ -22,9 +20,7 @@ class LukeForDocumentClassification(LukeModel):
         word_attention_mask: torch.LongTensor,
         label: torch.LongTensor = None,
     ):
-        _, pooled_output = super(LukeForDocumentClassification, self).forward(
-            word_ids, word_segment_ids, word_attention_mask
-        )
+        _, pooled_output = self.encoder.forward(word_ids, word_segment_ids, word_attention_mask)
 
         logits = self.classifier(pooled_output)
 

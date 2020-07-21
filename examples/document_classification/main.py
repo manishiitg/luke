@@ -13,8 +13,9 @@ from transformers import WEIGHTS_NAME
 
 from ..utils import set_seed
 from ..utils.trainer import Trainer, trainer_args
-from .model import LukeForDocumentClassification
+from .model import DocumentClassificationModel
 from .utils import MldocReader
+from luke.utils.model_utils import load_from_config
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,8 @@ def run(common_args, **task_args):
     model_config = args.model_config
     logger.info("Model configuration: %s", model_config)
 
-    model = LukeForDocumentClassification(model_config)
+    encoder = load_from_config(model_config)
+    model = DocumentClassificationModel(encoder=encoder)
     model.load_state_dict(args.model_weights, strict=False)
     model.to(args.device)
 
@@ -68,7 +70,7 @@ def run(common_args, **task_args):
         best_dev_accuracy = [-1]
         best_weights = [None]
 
-        def step_callback(model: LukeForDocumentClassification, global_step: int):
+        def step_callback(model: DocumentClassificationModel, global_step: int):
             if global_step % num_train_steps_per_epoch == 0 and args.local_rank in (0, -1):
                 epoch = int(global_step / num_train_steps_per_epoch - 1)
                 model.eval()
@@ -114,7 +116,7 @@ def run(common_args, **task_args):
 
 
 def evaluate(
-    args, eval_dataloader: DataLoader, model: LukeForDocumentClassification, output_file: str = None
+    args, eval_dataloader: DataLoader, model: DocumentClassificationModel, output_file: str = None
 ) -> Dict[str, float]:
     predictions = []
     labels = []
