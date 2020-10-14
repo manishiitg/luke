@@ -65,7 +65,7 @@ class RecruitProcessor(object):
             for line in f:
                 line = line.strip()
                 if line.startswith("-DOCSTART") or len(line) == 0:
-                    if not sentence_boundaries
+                    if not sentence_boundaries:
                         print("&&&&&&&&&&&")
                         print(sentence_boundaries)
 
@@ -88,7 +88,7 @@ class RecruitProcessor(object):
                 else:
                     if not sentence_boundaries:
                         sentence_boundaries.append(0)
-                        
+
                     parts = line.split(" ")
                     words.append(parts[0])
                     labels.append(parts[-1])
