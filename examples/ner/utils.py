@@ -68,7 +68,7 @@ class RecruitProcessor(object):
                     if not sentence_boundaries
                         print("&&&&&&&&&&&")
                         print(sentence_boundaries)
-                        
+
                     if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
                         print("@@#@#")
                         sentence_boundaries.append(len(words))
@@ -86,6 +86,9 @@ class RecruitProcessor(object):
                     if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
                         sentence_boundaries.append(len(words))
                 else:
+                    if not sentence_boundaries:
+                        sentence_boundaries.append(0)
+                        
                     parts = line.split(" ")
                     words.append(parts[0])
                     labels.append(parts[-1])
