@@ -85,6 +85,7 @@ class RecruitProcessor(object):
         if words:
             data.append((words, labels, sentence_boundaries))
 
+        logger.info("len of examples %s", len(data))
         return data
 
     def _create_examples(self, data, fold):
