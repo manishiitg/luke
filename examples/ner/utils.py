@@ -63,8 +63,8 @@ class RecruitProcessor(object):
         sentence_boundaries = []
         with open(input_file) as f:
             for line in f:
-                line = line.rstrip()
-                if line.startswith("-DOCSTART"):
+                line = line.strip()
+                if line.startswith("-DOCSTART") or len(line) == 0:
                     if words:
                         data.append((words, labels, sentence_boundaries))
                         assert sentence_boundaries[0] == 0
@@ -75,6 +75,7 @@ class RecruitProcessor(object):
                     continue
 
                 if not line:
+                    print("here")
                     if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
                         sentence_boundaries.append(len(words))
                 else:
