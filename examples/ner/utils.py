@@ -3,7 +3,8 @@ import math
 import os
 import unicodedata
 from transformers.tokenization_roberta import RobertaTokenizer
-import logger
+import logging
+
 
 class InputExample(object):
     def __init__(self, guid, words, labels, sentence_boundaries):
