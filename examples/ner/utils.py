@@ -3,7 +3,7 @@ import math
 import os
 import unicodedata
 from transformers.tokenization_roberta import RobertaTokenizer
-
+import logger
 
 class InputExample(object):
     def __init__(self, guid, words, labels, sentence_boundaries):
@@ -136,6 +136,7 @@ class CoNLLProcessor(object):
     def _create_examples(self, data, fold):
         return [InputExample(f"{fold}-{i}", *args) for i, args in enumerate(data)]
 
+logger = logging.getLogger(__name__)
 
 def convert_examples_to_features(
     examples, label_list, tokenizer, max_seq_length, max_entity_length, max_mention_length
@@ -155,8 +156,8 @@ def convert_examples_to_features(
 
     for example_index, example in enumerate(examples):
         tokens = [tokenize_word(w) for w in example.words]
-        if example_index < 250:
-            print(example_index , ":" ,example.words, "\n")
+        if example_index > 230 and example_index < 240:
+            logger.info("%s : %s ", example_index  ,example.words)
             
         subwords = [w for li in tokens for w in li]
 
