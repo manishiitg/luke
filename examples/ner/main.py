@@ -206,6 +206,8 @@ def load_and_cache_examples(args, fold):
             examples, label_list, args.tokenizer, args.max_seq_length, args.max_entity_length, args.max_mention_length
         )
 
+        logger.info("total features %s" , len(features))
+
         if args.local_rank in (-1, 0):
             torch.save(features, cache_file)
 
