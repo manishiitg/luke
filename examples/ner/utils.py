@@ -45,7 +45,7 @@ class InputFeatures(object):
 
 class RecruitProcessor(object):
     def get_train_examples(self, data_dir):
-        return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-train-v2.txt")), "train"))
+        return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-train-v2.txt")), "train"))[:500]
 
     def get_dev_examples(self, data_dir):
         return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-dev-v2.txt")), "dev"))
