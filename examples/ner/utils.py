@@ -53,7 +53,7 @@ class RecruitProcessor(object):
         return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-test-v2.txt")), "test"))
 
     def get_labels(self):
-        return ["PERSON",'ORG","Phone","Email","DOB","DATE","CARDINAL","EducationDegree","Designation","GPE","ExperianceYears"]
+        return ["PERSON","ORG","Phone","Email","DOB","DATE","CARDINAL","EducationDegree","Designation","GPE","ExperianceYears"]
 
     def _read_data(self, input_file):
         data = []
