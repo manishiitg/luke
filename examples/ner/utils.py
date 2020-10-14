@@ -163,12 +163,12 @@ def convert_examples_to_features(
             return tokenizer.tokenize(text, add_prefix_space=True)
         return tokenizer.tokenize(text)
 
-    logger.info("length examples %s", len(examples))
+    # logger.info("length examples %s", len(examples))
     for example_index, example in enumerate(examples):
         tokens = [tokenize_word(w) for w in example.words]
         # if example_index < 240:
         #     print("x")
-        logger.info("%s : %s ", example_index  ,example.words)
+        # logger.info("%s : %s ", example_index  ,example.words)
             
         subwords = [w for li in tokens for w in li]
 
