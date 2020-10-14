@@ -165,26 +165,29 @@ def convert_examples_to_features(
 
     # logger.info("length examples %s", len(examples))
     for example_index, example in enumerate(examples):
+        # print(example_index)
         tokens = [tokenize_word(w) for w in example.words]
         # if example_index < 240:
         #     print("x")
         # logger.info("%s : %s ", example_index  ,example.words)
             
         subwords = [w for li in tokens for w in li]
-        # print(example.words)
-        # print(example.labels)
-        # print(tokens)
+        if example_index == 1578:
+          print(example.words)
+          print(example.labels)
+          print(tokens)
 
 
         subword2token = list(itertools.chain(*[[i] * len(li) for i, li in enumerate(tokens)]))
         token2subword = [0] + list(itertools.accumulate(len(li) for li in tokens))
         subword_start_positions = frozenset(token2subword)
         subword_sentence_boundaries = [sum(len(li) for li in tokens[:p]) for p in example.sentence_boundaries]
-        # print(subword2token)
-        # print(token2subword)
-        # print(subword_start_positions)
-        # print(example.sentence_boundaries)
-        # print(subword_sentence_boundaries)
+        if example_index == 1578:
+          print(subword2token)
+          print(token2subword)
+          print(subword_start_positions)
+          print(example.sentence_boundaries)
+          print(subword_sentence_boundaries)
 
 
         entity_labels = {}
@@ -197,21 +200,23 @@ def convert_examples_to_features(
                     start = None
                     cur_type = None
 
-            
-            if start is None:
-                start = n
-                cur_type = label
-            elif cur_type != label:
-                entity_labels[(token2subword[start], token2subword[n])] = label_map[cur_type]
-                start = n
-                cur_type = label
+            else:
+              if start is None:
+                  start = n
+                  cur_type = label
+              elif cur_type != label:
+                  entity_labels[(token2subword[start], token2subword[n])] = label_map[cur_type]
+                  start = n
+                  cur_type = label
 
-        # print(entity_labels)
+        if example_index == 1578:
+          print(entity_labels)
         if start is not None:
             entity_labels[(token2subword[start], len(subwords))] = label_map[cur_type]
 
         for n in range(len(subword_sentence_boundaries) - 1):
-            # print("XXX ", n)
+            if example_index == 1578:
+              print("XXX ", n)
             doc_sent_start, doc_sent_end = subword_sentence_boundaries[n : n + 2]
 
             left_length = doc_sent_start
@@ -219,10 +224,11 @@ def convert_examples_to_features(
             sentence_length = doc_sent_end - doc_sent_start
             half_context_length = int((max_num_subwords - sentence_length) / 2)
 
-            # print("length length" ,  left_length)
-            # print("right length", right_length)
-            # print("sent length " ,sentence_length)
-            # print("half context length", half_context_length)
+            if example_index == 1578:
+              print("length length" ,  left_length)
+              print("right length", right_length)
+              print("sent length " ,sentence_length)
+              print("half context length", half_context_length)
 
             if left_length < right_length:
                 left_context_length = min(left_length, half_context_length)
@@ -308,7 +314,8 @@ def convert_examples_to_features(
                         labels=labels[start:end],
                     )
                 )
-
+        if example_index == 1578:
+          print(entity_labels)
         assert not entity_labels
         # print(features)
         # process.exit(0)
