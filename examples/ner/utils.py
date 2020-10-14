@@ -155,6 +155,9 @@ def convert_examples_to_features(
 
     for example_index, example in enumerate(examples):
         tokens = [tokenize_word(w) for w in example.words]
+        if example_index < 250:
+            print(tokens)
+            
         subwords = [w for li in tokens for w in li]
 
         subword2token = list(itertools.chain(*[[i] * len(li) for i, li in enumerate(tokens)]))

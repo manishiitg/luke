@@ -35,7 +35,7 @@ def cli():
 @click.option("--no-word-feature", is_flag=True)
 @click.option("--no-entity-feature", is_flag=True)
 @click.option("--do-train/--no-train", default=True)
-@click.option("--train-batch-size", default=2)
+@click.option("--train-batch-size", default=1)
 @click.option("--num-train-epochs", default=5.0)
 @click.option("--do-eval/--no-eval", default=True)
 @click.option("--eval-batch-size", default=32)
