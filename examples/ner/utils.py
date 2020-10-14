@@ -92,49 +92,49 @@ class RecruitProcessor(object):
     def _create_examples(self, data, fold):
         return [InputExample(f"{fold}-{i}", *args) for i, args in enumerate(data)]
 
-class CoNLLProcessor(object):
-    def get_train_examples(self, data_dir):
-        return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.train")), "train"))
+# class CoNLLProcessor(object):
+#     def get_train_examples(self, data_dir):
+#         return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.train")), "train"))
 
-    def get_dev_examples(self, data_dir):
-        return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.testa")), "dev"))
+#     def get_dev_examples(self, data_dir):
+#         return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.testa")), "dev"))
 
-    def get_test_examples(self, data_dir):
-        return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.testb")), "test"))
+#     def get_test_examples(self, data_dir):
+#         return list(self._create_examples(self._read_data(os.path.join(data_dir, "eng.testb")), "test"))
 
-    def get_labels(self):
-        return ["NIL", "MISC", "PER", "ORG", "LOC"]
+#     def get_labels(self):
+#         return ["NIL", "MISC", "PER", "ORG", "LOC"]
 
-    def _read_data(self, input_file):
-        data = []
-        words = []
-        labels = []
-        sentence_boundaries = []
-        with open(input_file) as f:
-            for line in f:
-                line = line.rstrip()
-                if line.startswith("-DOCSTART"):
-                    if words:
-                        data.append((words, labels, sentence_boundaries))
-                        assert sentence_boundaries[0] == 0
-                        assert sentence_boundaries[-1] == len(words)
-                        words = []
-                        labels = []
-                        sentence_boundaries = []
-                    continue
+#     def _read_data(self, input_file):
+#         data = []
+#         words = []
+#         labels = []
+#         sentence_boundaries = []
+#         with open(input_file) as f:
+#             for line in f:
+#                 line = line.rstrip()
+#                 if line.startswith("-DOCSTART"):
+#                     if words:
+#                         data.append((words, labels, sentence_boundaries))
+#                         assert sentence_boundaries[0] == 0
+#                         assert sentence_boundaries[-1] == len(words)
+#                         words = []
+#                         labels = []
+#                         sentence_boundaries = []
+#                     continue
 
-                if not line:
-                    if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
-                        sentence_boundaries.append(len(words))
-                else:
-                    parts = line.split(" ")
-                    words.append(parts[0])
-                    labels.append(parts[-1])
+#                 if not line:
+#                     if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
+#                         sentence_boundaries.append(len(words))
+#                 else:
+#                     parts = line.split(" ")
+#                     words.append(parts[0])
+#                     labels.append(parts[-1])
 
-        if words:
-            data.append((words, labels, sentence_boundaries))
+#         if words:
+#             data.append((words, labels, sentence_boundaries))
 
-        return data
+#         return data
 
     def _create_examples(self, data, fold):
         return [InputExample(f"{fold}-{i}", *args) for i, args in enumerate(data)]
@@ -292,7 +292,7 @@ def convert_examples_to_features(
                 )
 
         assert not entity_labels
-
+    logger.info("length of features %s", len(features))
     return features
 
 

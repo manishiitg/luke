@@ -17,7 +17,7 @@ from luke.utils.entity_vocab import MASK_TOKEN
 from ..utils import set_seed
 from ..utils.trainer import Trainer, trainer_args
 from .model import LukeForNamedEntityRecognition
-from .utils import CoNLLProcessor, RecruitProcessor, convert_examples_to_features
+from .utils import RecruitProcessor, convert_examples_to_features
 
 logger = logging.getLogger(__name__)
 
