@@ -176,6 +176,7 @@ def load_and_cache_examples(args, fold):
     if fold == "train" and args.train_on_dev_set:
         examples += processor.get_dev_examples(args.data_dir)
 
+    logger.info("total examples %s" , len(examples))
     label_list = processor.get_labels()
 
     bert_model_name = args.model_config.bert_model_name
