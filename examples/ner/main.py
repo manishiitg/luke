@@ -29,8 +29,8 @@ def cli():
 
 @cli.command()
 @click.option("--data-dir", default="data/conll_2003", type=click.Path(exists=True))
-@click.option("--max-seq-length", default=512)
-@click.option("--max-entity-length", default=128)
+@click.option("--max-seq-length", default=328)
+@click.option("--max-entity-length", default=64)
 @click.option("--max-mention-length", default=16)
 @click.option("--no-word-feature", is_flag=True)
 @click.option("--no-entity-feature", is_flag=True)
