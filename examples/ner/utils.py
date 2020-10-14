@@ -92,7 +92,7 @@ class RecruitProcessor(object):
             data.append((words, labels, sentence_boundaries))
 
         logger.info("len of examples %s", len(data))
-        logger.info(data)
+        # logger.info(data)
         return data
 
     def _create_examples(self, data, fold):
