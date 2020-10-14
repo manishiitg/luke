@@ -17,7 +17,7 @@ from luke.utils.entity_vocab import MASK_TOKEN
 from ..utils import set_seed
 from ..utils.trainer import Trainer, trainer_args
 from .model import LukeForNamedEntityRecognition
-from .utils import CoNLLProcessor, convert_examples_to_features
+from .utils import CoNLLProcessor, RecruitProcessor, convert_examples_to_features
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +165,7 @@ def load_and_cache_examples(args, fold):
     if args.local_rank not in (-1, 0) and fold == "train":
         torch.distributed.barrier()
 
-    processor = CoNLLProcessor()
+    processor = RecruitProcessor()
     if fold == "train":
         examples = processor.get_train_examples(args.data_dir)
     elif fold == "dev":

@@ -42,6 +42,52 @@ class InputFeatures(object):
         self.original_entity_spans = original_entity_spans
         self.labels = labels
 
+class RecruitProcessor(object):
+    def get_train_examples(self, data_dir):
+        return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-train-v2.txt")), "train"))
+
+    def get_dev_examples(self, data_dir):
+        return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-dev-v2.txt")), "dev"))
+
+    def get_test_examples(self, data_dir):
+        return list(self._create_examples(self._read_data(os.path.join(data_dir, "label_remove_email_dobner-test-v2.txt")), "test"))
+
+    def get_labels(self):
+        return ["PERSON",'ORG","Phone","Email","DOB","DATE","CARDINAL","EducationDegree","Designation","GPE","ExperianceYears"]
+
+    def _read_data(self, input_file):
+        data = []
+        words = []
+        labels = []
+        sentence_boundaries = []
+        with open(input_file) as f:
+            for line in f:
+                line = line.rstrip()
+                if line.startswith("-DOCSTART"):
+                    if words:
+                        data.append((words, labels, sentence_boundaries))
+                        assert sentence_boundaries[0] == 0
+                        assert sentence_boundaries[-1] == len(words)
+                        words = []
+                        labels = []
+                        sentence_boundaries = []
+                    continue
+
+                if not line:
+                    if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
+                        sentence_boundaries.append(len(words))
+                else:
+                    parts = line.split(" ")
+                    words.append(parts[0])
+                    labels.append(parts[-1])
+
+        if words:
+            data.append((words, labels, sentence_boundaries))
+
+        return data
+
+    def _create_examples(self, data, fold):
+        return [InputExample(f"{fold}-{i}", *args) for i, args in enumerate(data)]
 
 class CoNLLProcessor(object):
     def get_train_examples(self, data_dir):
