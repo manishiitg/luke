@@ -63,7 +63,6 @@ class RecruitProcessor(object):
         sentence_boundaries = []
         with open(input_file) as f:
             for line in f:
-                logger.info(line)
                 line = line.rstrip()
                 if line.startswith("-DOCSTART"):
                     if words:
