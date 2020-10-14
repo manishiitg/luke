@@ -66,6 +66,7 @@ class RecruitProcessor(object):
                 line = line.strip()
                 if line.startswith("-DOCSTART") or len(line) == 0:
                     if not sentence_boundaries or len(words) != sentence_boundaries[-1]:
+                        print("@@#@#")
                         sentence_boundaries.append(len(words))
                     if words:
                         data.append((words, labels, sentence_boundaries))
