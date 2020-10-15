@@ -196,7 +196,7 @@ def load_and_cache_examples(args, fold):
         )
         + ".pkl",
     )
-    if os.path.exists(cache_file):
+    if os.path.exists(cache_file) and False:
         logger.info("Loading features from the cached file %s", cache_file)
         features = torch.load(cache_file)
     else:
