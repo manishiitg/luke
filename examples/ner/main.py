@@ -29,7 +29,7 @@ def cli():
 
 @cli.command()
 @click.option("--data-dir", default="data/conll_2003", type=click.Path(exists=True))
-@click.option("--max-seq-length", default=512)
+@click.option("--max-seq-length", default=328)
 @click.option("--max-entity-length", default=256)
 @click.option("--max-mention-length", default=128)
 @click.option("--no-word-feature", is_flag=True)
@@ -38,7 +38,7 @@ def cli():
 @click.option("--train-batch-size", default=1)
 @click.option("--num-train-epochs", default=5.0)
 @click.option("--do-eval/--no-eval", default=True)
-@click.option("--eval-batch-size", default=32)
+@click.option("--eval-batch-size", default=4)
 @click.option("--train-on-dev-set", is_flag=True)
 @click.option("--seed", default=15)
 @trainer_args

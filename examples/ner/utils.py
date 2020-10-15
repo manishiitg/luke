@@ -172,7 +172,7 @@ def convert_examples_to_features(
         # logger.info("%s : %s ", example_index  ,example.words)
             
         subwords = [w for li in tokens for w in li]
-        if example_index == 1578:
+        if example_index == 52:
           print(example.words)
           print(example.labels)
           print(tokens)
@@ -182,7 +182,7 @@ def convert_examples_to_features(
         token2subword = [0] + list(itertools.accumulate(len(li) for li in tokens))
         subword_start_positions = frozenset(token2subword)
         subword_sentence_boundaries = [sum(len(li) for li in tokens[:p]) for p in example.sentence_boundaries]
-        if example_index == 1578:
+        if example_index == 52:
           print(subword2token)
           print(token2subword)
           print(subword_start_positions)
@@ -209,13 +209,13 @@ def convert_examples_to_features(
                   start = n
                   cur_type = label
 
-        if example_index == 1578:
+        if example_index == 52:
           print(entity_labels)
         if start is not None:
             entity_labels[(token2subword[start], len(subwords))] = label_map[cur_type]
 
         for n in range(len(subword_sentence_boundaries) - 1):
-            if example_index == 1578:
+            if example_index == 52:
               print("XXX ", n)
             doc_sent_start, doc_sent_end = subword_sentence_boundaries[n : n + 2]
 
@@ -224,7 +224,7 @@ def convert_examples_to_features(
             sentence_length = doc_sent_end - doc_sent_start
             half_context_length = int((max_num_subwords - sentence_length) / 2)
 
-            if example_index == 1578:
+            if example_index == 52:
               print("length length" ,  left_length)
               print("right length", right_length)
               print("sent length " ,sentence_length)
@@ -314,7 +314,7 @@ def convert_examples_to_features(
                         labels=labels[start:end],
                     )
                 )
-        if example_index == 1578:
+        if example_index == 52:
           print(entity_labels)
         assert not entity_labels
         # print(features)
