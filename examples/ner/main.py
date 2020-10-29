@@ -169,7 +169,7 @@ def load_and_cache_examples(args, fold):
     if fold == "train":
         examples = processor.get_train_examples(args.data_dir)
     elif fold == "dev":
-        examples = processor.get_dev_examples(args.data_dir)
+        examples = processor.get_dev_examples(args.data_dir)[:100]
     else:
         examples = processor.get_test_examples(args.data_dir)
 
