@@ -152,8 +152,8 @@ def evaluate(args, model, fold, output_file=None):
 
     assert len(final_predictions) == len(final_labels)
     print("The number of labels:", len(final_labels))
-    print(final_labels)
-    print(final_predictions)
+    # print(final_labels)
+    # print(final_predictions)
     print(seqeval.metrics.classification_report(final_labels, final_predictions, digits=4))
 
     return dict(
