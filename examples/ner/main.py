@@ -130,19 +130,19 @@ def evaluate(args, model, fold, output_file=None):
         predicted_sequence = ["O"] * len(example.words)
         for _, span, label in sorted(doc_results, key=lambda o: o[0], reverse=True):
             if all([o == "O" for o in predicted_sequence[span[0] : span[1]]]):
-                predicted_sequence[span[0]] = "B-" + label
+                predicted_sequence[span[0]] = label
                 if span[1] - span[0] > 1:
-                    predicted_sequence[span[0] + 1 : span[1]] = ["I-" + label] * (span[1] - span[0] - 1)
+                    predicted_sequence[span[0] + 1 : span[1]] = [label] * (span[1] - span[0] - 1)
 
         final_predictions += predicted_sequence
         final_labels += example.labels
 
     # convert IOB2 -> IOB1
-    prev_type = None
-    for n, label in enumerate(final_predictions):
-        if label[0] == "B" and label[2:] != prev_type:
-            final_predictions[n] = "I" + label[1:]
-        prev_type = label[2:]
+    # prev_type = None
+    # for n, label in enumerate(final_predictions):
+    #     if label[0] == "B" and label[2:] != prev_type:
+    #         final_predictions[n] = "I" + label[1:]
+    #     prev_type = label[2:]
 
     if output_file:
         all_words = [w for e in examples for w in e.words]
