@@ -167,11 +167,11 @@ def load_and_cache_examples(args, fold):
 
     processor = RecruitProcessor()
     if fold == "train":
-        examples = processor.get_train_examples(args.data_dir)[:100]
+        examples = processor.get_train_examples(args.data_dir)[:20]
     elif fold == "dev":
-        examples = processor.get_dev_examples(args.data_dir)[:100]
+        examples = processor.get_dev_examples(args.data_dir)[:20]
     else:
-        examples = processor.get_test_examples(args.data_dir)
+        examples = processor.get_test_examples(args.data_dir)[:20]
 
     if fold == "train" and args.train_on_dev_set:
         examples += processor.get_dev_examples(args.data_dir)
