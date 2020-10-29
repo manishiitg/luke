@@ -58,8 +58,13 @@ def run(common_args, **task_args):
 
     train_dataloader, _, _, processor = load_and_cache_examples(args, "train")
     results = {}
-
-    if args.do_train and False:
+    
+    args.do_train = False
+    model = LukeForNamedEntityRecognition(args, len(processor.get_labels()))
+    model.load_state_dict(args.model_weights, strict=False)
+    model.to(args.device)
+    
+    if args.do_train:
         model = LukeForNamedEntityRecognition(args, len(processor.get_labels()))
         model.load_state_dict(args.model_weights, strict=False)
         model.to(args.device)
