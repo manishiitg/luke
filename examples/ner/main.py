@@ -39,7 +39,7 @@ def cli():
 @click.option("--num-train-epochs", default=5.0)
 @click.option("--do-eval/--no-eval", default=True)
 @click.option("--eval-batch-size", default=4)
-@click.option("--train-on-dev-set", is_flag=True)
+@click.option("--train-on-dev-set", is_flag=False)
 @click.option("--seed", default=15)
 @trainer_args
 @click.pass_obj
