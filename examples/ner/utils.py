@@ -173,9 +173,10 @@ def convert_examples_to_features(
             
         subwords = [w for li in tokens for w in li]
         if example_index == 52:
-          print(example.words)
-          print(example.labels)
-          print(tokens)
+        #   print(example.words)
+        #   print(example.labels)
+        #   print(tokens)
+        pass
 
 
         subword2token = list(itertools.chain(*[[i] * len(li) for i, li in enumerate(tokens)]))
