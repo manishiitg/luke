@@ -154,12 +154,12 @@ def evaluate(args, model, fold, output_file=None):
     print("The number of labels:", len(final_labels))
     print(final_labels)
     print(final_predictions)
-    print(seqeval.metrics.classification_report(final_labels, final_predictions, digits=4, scheme="token"))
+    print(seqeval.metrics.classification_report(final_labels, final_predictions, digits=4))
 
     return dict(
-        f1=seqeval.metrics.f1_score(final_labels, final_predictions, scheme="token"),
-        precision=seqeval.metrics.precision_score(final_labels, final_predictions, scheme="token"),
-        recall=seqeval.metrics.recall_score(final_labels, final_predictions, scheme="token"),
+        f1=seqeval.metrics.f1_score(final_labels, final_predictions),
+        precision=seqeval.metrics.precision_score(final_labels, final_predictions),
+        recall=seqeval.metrics.recall_score(final_labels, final_predictions),
     )
 
 
