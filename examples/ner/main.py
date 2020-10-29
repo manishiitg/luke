@@ -58,12 +58,7 @@ def run(common_args, **task_args):
 
     train_dataloader, _, _, processor = load_and_cache_examples(args, "train")
     results = {}
-    
-    args.do_train = False
-    model = LukeForNamedEntityRecognition(args, len(processor.get_labels()))
-    model.load_state_dict(args.model_weights, strict=False)
-    model.to(args.device)
-    
+
     if args.do_train:
         model = LukeForNamedEntityRecognition(args, len(processor.get_labels()))
         model.load_state_dict(args.model_weights, strict=False)
@@ -172,7 +167,7 @@ def load_and_cache_examples(args, fold):
 
     processor = RecruitProcessor()
     if fold == "train":
-        examples = processor.get_train_examples(args.data_dir)
+        examples = processor.get_train_examples(args.data_dir)[:100]
     elif fold == "dev":
         examples = processor.get_dev_examples(args.data_dir)[:100]
     else:
